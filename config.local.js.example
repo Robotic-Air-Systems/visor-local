@@ -1,0 +1,11 @@
+// Plantilla para el archivo local de configuración.
+//
+// Uso:
+//   1. Copiar este archivo a `config.local.js` en la misma carpeta:
+//        cp config.local.js.example config.local.js
+//   2. Reemplazar el placeholder con el token real de Mapbox.
+//
+// `config.local.js` está en .gitignore — no se sube al repo, así que
+// cada quien usa su token sin riesgo de exponerlo.
+
+window.MBT = "pk.eyJ...REEMPLAZAR_CON_TU_TOKEN_DE_MAPBOX...";

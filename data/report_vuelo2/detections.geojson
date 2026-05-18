@@ -1,0 +1,915 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.14041211036445,
+          -13.334589545151381
+        ]
+      },
+      "properties": {
+        "id": "20260425_164642_RAS_00023_vehicle_1",
+        "source_image": "RAS_00023",
+        "source_image_file": "RAS_00023.JPG",
+        "class": "vehicle",
+        "confidence": 0.56396484375,
+        "bbox_px": [
+          6076.6968167463665,
+          3331.5808735774153,
+          404.2632499692436,
+          947.21009019763
+        ],
+        "bbox_px_original": [
+          5990,
+          3344,
+          6399,
+          4304
+        ],
+        "tile_dims": [
+          9504,
+          6398
+        ],
+        "crop": "crops/20260425_164642_RAS_00023_vehicle_1.jpg",
+        "timestamp": "2026:04:25 16:46:42.338958"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.18233954299585,
+          -13.307393780990822
+        ]
+      },
+      "properties": {
+        "id": "20260425_165112_RAS_00083_vehicle_1",
+        "source_image": "RAS_00083",
+        "source_image_file": "RAS_00083.JPG",
+        "class": "vehicle",
+        "confidence": 0.8037109375,
+        "bbox_px": [
+          6356.407627315569,
+          5160.428298673356,
+          208.6986290462819,
+          181.2911976401665
+        ],
+        "bbox_px_original": [
+          6348,
+          5183,
+          6557,
+          5364
+        ],
+        "tile_dims": [
+          9504,
+          6326
+        ],
+        "crop": "crops/20260425_165112_RAS_00083_vehicle_1.jpg",
+        "timestamp": "2026:04:25 16:51:12.338304"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.18963066265242,
+          -13.299631255748094
+        ]
+      },
+      "properties": {
+        "id": "20260425_165207_RAS_00095_vehicle_1",
+        "source_image": "RAS_00095",
+        "source_image_file": "RAS_00095.JPG",
+        "class": "vehicle",
+        "confidence": 0.638671875,
+        "bbox_px": [
+          3482.4925783083286,
+          5723.36552511506,
+          1195.759664319246,
+          1172.776568712322
+        ],
+        "bbox_px_original": [
+          2193,
+          5378,
+          3151,
+          6316
+        ],
+        "tile_dims": [
+          9504,
+          7627
+        ],
+        "crop": "crops/20260425_165207_RAS_00095_vehicle_1.jpg",
+        "timestamp": "2026:04:25 16:52:07.040564"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.18978574965767,
+          -13.299839673162358
+        ]
+      },
+      "properties": {
+        "id": "20260425_165207_RAS_00095_vehicle_2",
+        "source_image": "RAS_00095",
+        "source_image_file": "RAS_00095.JPG",
+        "class": "vehicle",
+        "confidence": 0.595703125,
+        "bbox_px": [
+          4555.0786187529075,
+          5983.354588421176,
+          400.238719513608,
+          714.1307399999268
+        ],
+        "bbox_px_original": [
+          3072,
+          5687,
+          3414,
+          6334
+        ],
+        "tile_dims": [
+          9504,
+          7627
+        ],
+        "crop": "crops/20260425_165207_RAS_00095_vehicle_2.jpg",
+        "timestamp": "2026:04:25 16:52:07.040564"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.18783546881964,
+          -13.300890514857416
+        ]
+      },
+      "properties": {
+        "id": "20260425_165207_RAS_00095_vehicle_3",
+        "source_image": "RAS_00095",
+        "source_image_file": "RAS_00095.JPG",
+        "class": "vehicle",
+        "confidence": 0.5546875,
+        "bbox_px": [
+          4032.5895274161353,
+          626.4737544438518,
+          952.0563621401802,
+          399.94964112206446
+        ],
+        "bbox_px_original": [
+          2401,
+          0,
+          3282,
+          260
+        ],
+        "tile_dims": [
+          9504,
+          7627
+        ],
+        "crop": "crops/20260425_165207_RAS_00095_vehicle_3.jpg",
+        "timestamp": "2026:04:25 16:52:07.040564"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.18955294358084,
+          -13.299578140816724
+        ]
+      },
+      "properties": {
+        "id": "20260425_165216_RAS_00097_vehicle_1",
+        "source_image": "RAS_00097",
+        "source_image_file": "RAS_00097.JPG",
+        "class": "vehicle",
+        "confidence": 0.5068359375,
+        "bbox_px": [
+          7.317861792842173,
+          418.24068691884514,
+          939.6202923788763,
+          918.2858176452617
+        ],
+        "bbox_px_original": [
+          0,
+          361,
+          943,
+          1277
+        ],
+        "tile_dims": [
+          9504,
+          6313
+        ],
+        "crop": "crops/20260425_165216_RAS_00097_vehicle_1.jpg",
+        "timestamp": "2026:04:25 16:52:16.338604"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.2014202886251,
+          -13.292459828441254
+        ]
+      },
+      "properties": {
+        "id": "20260425_165329_RAS_00113_vehicle_1",
+        "source_image": "RAS_00113",
+        "source_image_file": "RAS_00113.JPG",
+        "class": "vehicle",
+        "confidence": 0.7685546875,
+        "bbox_px": [
+          1039.174969254092,
+          3527.901524406434,
+          377.48059163184416,
+          346.7046624885893
+        ],
+        "bbox_px_original": [
+          1055,
+          3546,
+          1449,
+          3903
+        ],
+        "tile_dims": [
+          9504,
+          6427
+        ],
+        "crop": "crops/20260425_165329_RAS_00113_vehicle_1.jpg",
+        "timestamp": "2026:04:25 16:53:29.642998"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.20442045543396,
+          -13.292366004269269
+        ]
+      },
+      "properties": {
+        "id": "20260425_165338_RAS_00115_vehicle_1",
+        "source_image": "RAS_00115",
+        "source_image_file": "RAS_00115.JPG",
+        "class": "vehicle",
+        "confidence": 0.53515625,
+        "bbox_px": [
+          6307.724931135304,
+          6014.1067770115715,
+          387.2949551041911,
+          201.17766303336703
+        ],
+        "bbox_px_original": [
+          6361,
+          6144,
+          6742,
+          6336
+        ],
+        "tile_dims": [
+          9504,
+          6237
+        ],
+        "crop": "crops/20260425_165338_RAS_00115_vehicle_1.jpg",
+        "timestamp": "2026:04:25 16:53:38.640381"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.20394056779818,
+          -13.292516356273424
+        ]
+      },
+      "properties": {
+        "id": "20260425_165338_RAS_00115_vehicle_2",
+        "source_image": "RAS_00115",
+        "source_image_file": "RAS_00115.JPG",
+        "class": "vehicle",
+        "confidence": 0.52734375,
+        "bbox_px": [
+          5836.228530589948,
+          4212.704834328143,
+          497.1536393501001,
+          967.3151509683566
+        ],
+        "bbox_px_original": [
+          5911,
+          4368,
+          6399,
+          5328
+        ],
+        "tile_dims": [
+          9504,
+          6237
+        ],
+        "crop": "crops/20260425_165338_RAS_00115_vehicle_2.jpg",
+        "timestamp": "2026:04:25 16:53:38.640381"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.20476012737842,
+          -13.292369252055941
+        ]
+      },
+      "properties": {
+        "id": "20260425_165347_RAS_00117_vehicle_1",
+        "source_image": "RAS_00117",
+        "source_image_file": "RAS_00117.JPG",
+        "class": "vehicle",
+        "confidence": 0.625,
+        "bbox_px": [
+          8084.251478283369,
+          1583.780267959909,
+          667.2015651559368,
+          511.08718778781076
+        ],
+        "bbox_px_original": [
+          8194,
+          1615,
+          9102,
+          2304
+        ],
+        "tile_dims": [
+          9504,
+          6397
+        ],
+        "crop": "crops/20260425_165347_RAS_00117_vehicle_1.jpg",
+        "timestamp": "2026:04:25 16:53:47.639517"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.20499211524213,
+          -13.29229236599641
+        ]
+      },
+      "properties": {
+        "id": "20260425_165347_RAS_00117_vehicle_2",
+        "source_image": "RAS_00117",
+        "source_image_file": "RAS_00117.JPG",
+        "class": "vehicle",
+        "confidence": 0.59814453125,
+        "bbox_px": [
+          8135.964682276023,
+          2092.431675390537,
+          706.083701431432,
+          734.4985212462047
+        ],
+        "bbox_px_original": [
+          8192,
+          2320,
+          9092,
+          3280
+        ],
+        "tile_dims": [
+          9504,
+          6397
+        ],
+        "crop": "crops/20260425_165347_RAS_00117_vehicle_2.jpg",
+        "timestamp": "2026:04:25 16:53:47.639517"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.20564369946892,
+          -13.29214256056079
+        ]
+      },
+      "properties": {
+        "id": "20260425_165347_RAS_00117_vehicle_3",
+        "source_image": "RAS_00117",
+        "source_image_file": "RAS_00117.JPG",
+        "class": "vehicle",
+        "confidence": 0.58984375,
+        "bbox_px": [
+          8442.038931679333,
+          3695.254046932899,
+          796.2297099324005,
+          873.9140267692778
+        ],
+        "bbox_px_original": [
+          8376,
+          4368,
+          9324,
+          5328
+        ],
+        "tile_dims": [
+          9504,
+          6397
+        ],
+        "crop": "crops/20260425_165347_RAS_00117_vehicle_3.jpg",
+        "timestamp": "2026:04:25 16:53:47.639517"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.20494748858123,
+          -13.292180606093357
+        ]
+      },
+      "properties": {
+        "id": "20260425_165347_RAS_00117_vehicle_4",
+        "source_image": "RAS_00117",
+        "source_image_file": "RAS_00117.JPG",
+        "class": "vehicle",
+        "confidence": 0.587890625,
+        "bbox_px": [
+          7958.30067505476,
+          2112.177824488991,
+          439.06028024797433,
+          740.8622172548444
+        ],
+        "bbox_px_original": [
+          7934,
+          2352,
+          8448,
+          3312
+        ],
+        "tile_dims": [
+          9504,
+          6397
+        ],
+        "crop": "crops/20260425_165347_RAS_00117_vehicle_4.jpg",
+        "timestamp": "2026:04:25 16:53:47.639517"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.20550676975807,
+          -13.291818250341478
+        ]
+      },
+      "properties": {
+        "id": "20260425_165347_RAS_00117_vehicle_5",
+        "source_image": "RAS_00117",
+        "source_image_file": "RAS_00117.JPG",
+        "class": "vehicle",
+        "confidence": 0.56591796875,
+        "bbox_px": [
+          7528.3074448491025,
+          3725.951664579274,
+          799.2746830624546,
+          904.9376067937833
+        ],
+        "bbox_px_original": [
+          7172,
+          4368,
+          8104,
+          5328
+        ],
+        "tile_dims": [
+          9504,
+          6397
+        ],
+        "crop": "crops/20260425_165347_RAS_00117_vehicle_5.jpg",
+        "timestamp": "2026:04:25 16:53:47.639517"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.20536039690101,
+          -13.292307668547474
+        ]
+      },
+      "properties": {
+        "id": "20260425_165347_RAS_00117_vehicle_6",
+        "source_image": "RAS_00117",
+        "source_image_file": "RAS_00117.JPG",
+        "class": "vehicle",
+        "confidence": 0.556640625,
+        "bbox_px": [
+          8625.092512276293,
+          2908.8508090665687,
+          596.1883585545474,
+          772.4576753670285
+        ],
+        "bbox_px_original": [
+          8762,
+          3390,
+          9472,
+          4335
+        ],
+        "tile_dims": [
+          9504,
+          6397
+        ],
+        "crop": "crops/20260425_165347_RAS_00117_vehicle_6.jpg",
+        "timestamp": "2026:04:25 16:53:47.639517"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.20579522862903,
+          -13.291544543203178
+        ]
+      },
+      "properties": {
+        "id": "20260425_165347_RAS_00117_vehicle_7",
+        "source_image": "RAS_00117",
+        "source_image_file": "RAS_00117.JPG",
+        "class": "vehicle",
+        "confidence": 0.5498046875,
+        "bbox_px": [
+          7319.606207634773,
+          4647.908503383978,
+          550.3645087341374,
+          995.0108871541806
+        ],
+        "bbox_px_original": [
+          6840,
+          5360,
+          7424,
+          6320
+        ],
+        "tile_dims": [
+          9504,
+          6397
+        ],
+        "crop": "crops/20260425_165347_RAS_00117_vehicle_7.jpg",
+        "timestamp": "2026:04:25 16:53:47.639517"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.20596198155472,
+          -13.291978905237977
+        ]
+      },
+      "properties": {
+        "id": "20260425_165347_RAS_00117_vehicle_8",
+        "source_image": "RAS_00117",
+        "source_image_file": "RAS_00117.JPG",
+        "class": "vehicle",
+        "confidence": 0.5068359375,
+        "bbox_px": [
+          8398.479591323547,
+          4563.683732150741,
+          800.6240536860842,
+          967.0102702654049
+        ],
+        "bbox_px_original": [
+          8192,
+          5361,
+          9100,
+          6319
+        ],
+        "tile_dims": [
+          9504,
+          6397
+        ],
+        "crop": "crops/20260425_165347_RAS_00117_vehicle_8.jpg",
+        "timestamp": "2026:04:25 16:53:47.639517"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.20628507146395,
+          -13.291691783013004
+        ]
+      },
+      "properties": {
+        "id": "20260425_165356_RAS_00119_vehicle_1",
+        "source_image": "RAS_00119",
+        "source_image_file": "RAS_00119.JPG",
+        "class": "vehicle",
+        "confidence": 0.55908203125,
+        "bbox_px": [
+          7775.973650294354,
+          2443.552456104458,
+          716.9086166674115,
+          943.773209012551
+        ],
+        "bbox_px_original": [
+          7705,
+          2352,
+          8448,
+          3312
+        ],
+        "tile_dims": [
+          9504,
+          6494
+        ],
+        "crop": "crops/20260425_165356_RAS_00119_vehicle_1.jpg",
+        "timestamp": "2026:04:25 16:53:56.939519"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.20667106890379,
+          -13.291968385246776
+        ]
+      },
+      "properties": {
+        "id": "20260425_165356_RAS_00119_vehicle_2",
+        "source_image": "RAS_00119",
+        "source_image_file": "RAS_00119.JPG",
+        "class": "vehicle",
+        "confidence": 0.5341796875,
+        "bbox_px": [
+          9227.620999567325,
+          3152.103002249976,
+          255.5256173507205,
+          853.5824058596495
+        ],
+        "bbox_px_original": [
+          9216,
+          3072,
+          9484,
+          3947
+        ],
+        "tile_dims": [
+          9504,
+          6494
+        ],
+        "crop": "crops/20260425_165356_RAS_00119_vehicle_2.jpg",
+        "timestamp": "2026:04:25 16:53:56.939519"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.20613950251533,
+          -13.292178146271677
+        ]
+      },
+      "properties": {
+        "id": "20260425_165356_RAS_00119_vehicle_3",
+        "source_image": "RAS_00119",
+        "source_image_file": "RAS_00119.JPG",
+        "class": "vehicle",
+        "confidence": 0.5283203125,
+        "bbox_px": [
+          9061.7379500505,
+          1449.7134173998977,
+          409.09830936548315,
+          937.9017589314424
+        ],
+        "bbox_px_original": [
+          9043,
+          1328,
+          9472,
+          2287
+        ],
+        "tile_dims": [
+          9504,
+          6494
+        ],
+        "crop": "crops/20260425_165356_RAS_00119_vehicle_3.jpg",
+        "timestamp": "2026:04:25 16:53:56.939519"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.20568916329042,
+          -13.292042634368112
+        ]
+      },
+      "properties": {
+        "id": "20260425_165356_RAS_00119_vehicle_4",
+        "source_image": "RAS_00119",
+        "source_image_file": "RAS_00119.JPG",
+        "class": "vehicle",
+        "confidence": 0.5244140625,
+        "bbox_px": [
+          8202.072379323856,
+          437.42084321437295,
+          289.93162971932907,
+          943.0780449222536
+        ],
+        "bbox_px_original": [
+          8147,
+          304,
+          8448,
+          1263
+        ],
+        "tile_dims": [
+          9504,
+          6494
+        ],
+        "crop": "crops/20260425_165356_RAS_00119_vehicle_4.jpg",
+        "timestamp": "2026:04:25 16:53:56.939519"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.22446200377338,
+          -13.279276461046424
+        ]
+      },
+      "properties": {
+        "id": "20260425_165601_RAS_00145_vehicle_1",
+        "source_image": "RAS_00145",
+        "source_image_file": "RAS_00145.JPG",
+        "class": "vehicle",
+        "confidence": 0.513671875,
+        "bbox_px": [
+          6595.891788651702,
+          3882.595662895741,
+          733.6389868582601,
+          471.90582328421806
+        ],
+        "bbox_px_original": [
+          6704,
+          3886,
+          7424,
+          4352
+        ],
+        "tile_dims": [
+          9504,
+          6403
+        ],
+        "crop": "crops/20260425_165601_RAS_00145_vehicle_1.jpg",
+        "timestamp": "2026:04:25 16:56:01.439495"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.22684182700259,
+          -13.277370860598959
+        ]
+      },
+      "properties": {
+        "id": "20260425_165620_RAS_00149_vehicle_1",
+        "source_image": "RAS_00149",
+        "source_image_file": "RAS_00149.JPG",
+        "class": "vehicle",
+        "confidence": 0.60302734375,
+        "bbox_px": [
+          7970.159488144481,
+          3136.988065111196,
+          265.707175659275,
+          94.07803142554667
+        ],
+        "bbox_px_original": [
+          7747,
+          3072,
+          8068,
+          3179
+        ],
+        "tile_dims": [
+          9504,
+          6748
+        ],
+        "crop": "crops/20260425_165620_RAS_00149_vehicle_1.jpg",
+        "timestamp": "2026:04:25 16:56:20.838077"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.22669199493937,
+          -13.277436650812746
+        ]
+      },
+      "properties": {
+        "id": "20260425_165620_RAS_00149_vehicle_2",
+        "source_image": "RAS_00149",
+        "source_image_file": "RAS_00149.JPG",
+        "class": "vehicle",
+        "confidence": 0.56103515625,
+        "bbox_px": [
+          7921.593728370793,
+          2668.7676296118825,
+          162.43887691481814,
+          101.01563556447309
+        ],
+        "bbox_px_original": [
+          7705,
+          2536,
+          7900,
+          2650
+        ],
+        "tile_dims": [
+          9504,
+          6748
+        ],
+        "crop": "crops/20260425_165620_RAS_00149_vehicle_2.jpg",
+        "timestamp": "2026:04:25 16:56:20.838077"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.24743508143061,
+          -13.259702507342512
+        ]
+      },
+      "properties": {
+        "id": "20260425_165856_RAS_00181_vehicle_1",
+        "source_image": "RAS_00181",
+        "source_image_file": "RAS_00181.JPG",
+        "class": "vehicle",
+        "confidence": 0.60009765625,
+        "bbox_px": [
+          1480.1776310014711,
+          4865.194062722917,
+          439.5148717673201,
+          288.2866469160399
+        ],
+        "bbox_px_original": [
+          1414,
+          5094,
+          1843,
+          5375
+        ],
+        "tile_dims": [
+          9504,
+          6160
+        ],
+        "crop": "crops/20260425_165856_RAS_00181_vehicle_1.jpg",
+        "timestamp": "2026:04:25 16:58:56.038861"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -76.32056711757899,
+          -13.201934565143228
+        ]
+      },
+      "properties": {
+        "id": "20260425_170825_RAS_00295_vehicle_1",
+        "source_image": "RAS_00295",
+        "source_image_file": "RAS_00295.JPG",
+        "class": "vehicle",
+        "confidence": 0.68994140625,
+        "bbox_px": [
+          1248.4757081611801,
+          6012.388520543772,
+          263.47102697922423,
+          196.86298689608884
+        ],
+        "bbox_px_original": [
+          1239,
+          6144,
+          1496,
+          6335
+        ],
+        "tile_dims": [
+          9504,
+          6213
+        ],
+        "crop": "crops/20260425_170825_RAS_00295_vehicle_1.jpg",
+        "timestamp": "2026:04:25 17:08:25.239560"
+      }
+    }
+  ]
+}

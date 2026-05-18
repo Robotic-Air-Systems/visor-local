@@ -1,0 +1,56 @@
+# ============================================================
+# visor-local — qué no subimos a git
+# ============================================================
+#
+# El workspace pesa ~675 MB por las fotos HD que extraemos del KMZ.
+# Esas son regenerables corriendo `tools/build_manifest.py` sobre
+# un KMZ producido por photos-to-kmz, así que las dejamos fuera de
+# git. Lo que sí queda en el repo:
+#
+#   * el HTML del visor (modificado, sin login)
+#   * los tools/ que generan los JSONs y extraen las tiles
+#   * los geojsons + manifest + detections (los archivos chicos
+#     que el frontend consume directo)
+#   * el KMZ de infraestructura (TGP) como referencia
+#
+# Para reproducir el setup desde cero después de un git clone:
+#   1. conseguir un KMZ del engine (p.ej. tgp-half-9504.kmz)
+#   2. python tools/build_manifest.py tgp-half-9504.kmz \
+#          -o data/report_vuelo2 --name "TGP" --date 2026-05-12
+#   3. python serve.py  →  http://127.0.0.1:8765/
+
+# ─── Fotos rectificadas (extraídas del KMZ, regenerables) ────────
+data/report_*/photos/
+data/report_*/photos_hd/
+
+# El KMZ HD propio del flight (>600 MB).
+# (No suele estar acá pero por si alguien copia uno suelto.)
+*.kmz
+# pero sí queremos el KMZ de infraestructura (chico, fuente de los geojsons)
+!data/KMZ_TGP.kmz
+
+# Build output del manifest builder cuando se le pasa --out a /tmp
+tgp-*-extract/
+
+# ─── Python ─────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# ─── Editor / OS ────────────────────────────────────────────────
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# ─── Logs y temporales ──────────────────────────────────────────
+*.log
+tmp/
+
+# ─── Configuración local (tokens y demás secretos) ──────────────
+config.local.js
+!config.local.js.example
