@@ -9,3 +9,22 @@
 // cada quien usa su token sin riesgo de exponerlo.
 
 window.MBT = "pk.eyJ...REEMPLAZAR_CON_TU_TOKEN_DE_MAPBOX...";
+
+// ─────────────────────────────────────────────────────────────────────
+// Backend URL — solo si el visor se sirve desde un origin DIFERENTE al
+// del API.
+//
+// Setup A (default — recomendado, no setear nada acá):
+//   El visor se sirve desde el mismo host que photos-to-kmz
+//   (P2K_WEB_DIR=visor-local/ en el server). Same-origin, no
+//   necesita CORS. Las URLs se resuelven contra location.host.
+//
+// Setup B (visor local + backend remoto):
+//   El operador corre `python3 serve.py` localmente y el backend
+//   vive en otro host (ej. Tailscale). Cross-origin:
+//   * Server tiene que tener CORS abierto para el origin del visor.
+//   * WebSocket: server tiene que aceptar el Origin del browser.
+//
+// Ejemplo Setup B (Tailscale, weekend test 2026-05-23):
+//   window.API_BASE = "https://office-server.ras.ts.net:8443";
+//   window.WS_BASE  = "wss://office-server.ras.ts.net:8443";

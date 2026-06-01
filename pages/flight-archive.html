@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Aerial Fences · Vuelo archivado</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue:#1736F5; --navy:#111D4A; --ink:#001011;
+  --muted:#A9BCD0; --border:#D8DBE2; --bg:#F4F6FA;
+  --font:'Outfit',system-ui,sans-serif;
+  --green:#15803d; --red:#b91c1c; --amber:#b45309;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:var(--font);color:var(--ink);overflow:hidden;}
+.layout{display:grid;grid-template-columns:340px 1fr;height:100vh;}
+aside{
+  background:#fff;border-right:1px solid var(--border);
+  padding:22px 22px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;
+}
+.back{font-size:12px;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+.back:hover{color:var(--navy);}
+h2{font-size:17px;font-weight:600;color:var(--navy);line-height:1.3;}
+h3{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:6px;}
+dl{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:12px;}
+dt{color:var(--muted);font-weight:500;}
+dd{color:var(--ink);}
+dd code{font-family:ui-monospace,monospace;font-size:11px;background:var(--bg);padding:1px 5px;border-radius:3px;}
+
+.layer-toggles{display:flex;flex-direction:column;gap:6px;}
+.layer-toggles label{
+  display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);
+  padding:6px 8px;border-radius:6px;cursor:pointer;
+  transition:background .12s;
+}
+.layer-toggles label:hover{background:var(--bg);}
+.layer-toggles input{accent-color:var(--blue);cursor:pointer;}
+
+.ann-section{display:flex;flex-direction:column;gap:8px;}
+.ann-count{font-size:12px;color:var(--muted);}
+.ann-shapes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;}
+.ann-shape-btn{
+  padding:8px 4px;background:#fff;border:1px solid var(--border);
+  border-radius:6px;font-family:var(--font);font-size:11px;font-weight:500;
+  color:var(--ink);cursor:pointer;transition:all .12s;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.ann-shape-btn:hover{border-color:var(--blue);}
+.ann-shape-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+.ann-shape-icon{font-size:14px;line-height:1;}
+.ann-shape-cancel{
+  margin-top:4px;padding:6px;font-size:11px;
+  background:#fff;border:1px solid var(--border);border-radius:6px;
+  color:var(--red);cursor:pointer;font-family:var(--font);
+  display:none;
+}
+.ann-shape-cancel.show{display:block;}
+.ann-hint{
+  font-size:11px;color:var(--amber);
+  background:#fef3c7;border:1px solid #fde68a;
+  padding:6px 10px;border-radius:6px;
+  display:none;line-height:1.4;
+}
+.ann-hint.show{display:block;}
+
+#status{
+  font-size:12px;color:var(--muted);margin-top:auto;padding-top:12px;
+  border-top:1px solid var(--border);
+}
+#status.error{color:var(--red);}
+
+#map{height:100%;width:100%;}
+.missing-param{padding:3em 2em;font-family:var(--font);color:var(--ink);max-width:600px;}
+.missing-param code{background:var(--bg);padding:1px 6px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;}
+.missing-param a{color:var(--blue);}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <a class="back" href="../">← Inicio</a>
+    <div>
+      <h2 id="flight-title">…</h2>
+      <p style="font-size:11px;color:var(--muted);margin-top:2px;" id="flight-sub"></p>
+    </div>
+    <dl id="flight-meta"></dl>
+
+    <h3>Capas</h3>
+    <div class="layer-toggles">
+      <label><input type="checkbox" data-layer="ductos" checked> Ducto</label>
+      <label><input type="checkbox" data-layer="estaciones" checked> Estaciones</label>
+      <label><input type="checkbox" data-layer="postes"> Postes (mojones KM)</label>
+      <label><input type="checkbox" data-layer="flight-path" checked> Ruta de vuelo</label>
+      <label><input type="checkbox" data-layer="footprints"> Footprints</label>
+      <label><input type="checkbox" data-layer="photos" checked> Fotos del dron</label>
+      <label><input type="checkbox" data-layer="detections" checked> Detecciones</label>
+      <label><input type="checkbox" data-layer="annotations" checked> Anotaciones</label>
+    </div>
+
+    <h3>Anotaciones manuales</h3>
+    <div class="ann-section">
+      <p class="ann-count" id="ann-count">0 anotaciones</p>
+      <div class="ann-shapes">
+        <button class="ann-shape-btn" data-shape="circle">
+          <span class="ann-shape-icon">○</span><span>Círculo</span>
+        </button>
+        <button class="ann-shape-btn" data-shape="rectangle">
+          <span class="ann-shape-icon">▭</span><span>Rectángulo</span>
+        </button>
+        <button class="ann-shape-btn" data-shape="polygon">
+          <span class="ann-shape-icon">⬠</span><span>Polígono</span>
+        </button>
+      </div>
+      <button class="ann-shape-cancel" id="ann-cancel-btn">Cancelar dibujo (Esc)</button>
+      <div class="ann-hint" id="ann-hint"></div>
+    </div>
+
+    <p id="status">cargando…</p>
+  </aside>
+  <div id="map"></div>
+</div>
+<script src="../config.local.js" onerror="console.warn('config.local.js no encontrado — labels de estaciones/postes no van a renderizar sin token Mapbox')"></script>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script type="module" src="../src/pages/flight-archive.js"></script>
+</body>
+</html>

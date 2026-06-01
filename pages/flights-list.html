@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Aerial Fences · Vuelos en vivo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue:#1736F5; --navy:#111D4A; --ink:#001011;
+  --muted:#A9BCD0; --border:#D8DBE2; --bg:#F4F6FA;
+  --font:'Outfit',system-ui,sans-serif;
+  --shadow-sm:0 1px 4px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04);
+  --shadow-md:0 8px 28px rgba(0,0,0,.10),0 0 0 1px rgba(0,0,0,.05);
+  --green:#15803d; --amber:#b45309; --gray:#6b7280;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:100%;}
+.shell{max-width:960px;margin:0 auto;padding:32px 24px 64px;}
+.back{
+  font-size:13px;color:var(--muted);text-decoration:none;
+  display:inline-flex;align-items:center;gap:6px;margin-bottom:18px;
+}
+.back:hover{color:var(--navy);}
+h1{font-size:26px;font-weight:600;color:var(--navy);letter-spacing:-.01em;margin-bottom:6px;}
+.lead{font-size:14px;color:#5b6478;margin-bottom:28px;}
+.status-bar{
+  font-size:12px;color:var(--muted);
+  display:flex;gap:14px;align-items:center;margin-bottom:18px;
+}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--gray);}
+.dot.live{background:var(--green);animation:pulse 1.6s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.flights{display:grid;gap:12px;}
+.flight-card{
+  background:#fff;border:1px solid var(--border);border-radius:12px;
+  padding:18px 20px;text-decoration:none;color:var(--ink);
+  box-shadow:var(--shadow-sm);
+  transition:transform .12s,box-shadow .12s,border-color .12s;
+  display:block;
+}
+.flight-card:hover{
+  transform:translateY(-1px);box-shadow:var(--shadow-md);
+  border-color:var(--blue);
+}
+.flight-title{font-size:16px;font-weight:600;color:var(--navy);margin-bottom:6px;}
+.flight-meta{
+  display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#6b7488;
+  align-items:center;
+}
+.badge{
+  font-size:10px;font-weight:600;padding:3px 8px;border-radius:10px;
+  text-transform:uppercase;letter-spacing:.05em;
+}
+.badge.active{background:#dcfce7;color:var(--green);}
+.badge.ended{background:#f3f4f6;color:var(--gray);}
+.empty{
+  text-align:center;padding:48px 20px;color:var(--muted);font-size:14px;
+}
+.empty code{
+  font-family:ui-monospace,monospace;font-size:12px;
+  background:#fff;padding:2px 6px;border-radius:4px;
+  border:1px solid var(--border);color:#5b6478;
+}
+.error{
+  background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;
+  padding:14px 18px;border-radius:10px;font-size:13px;
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <a class="back" href="../">← Inicio</a>
+  <h1>Vuelos en vivo</h1>
+  <p class="lead">Vuelos activos en el server. La lista se refresca cada 5 segundos.</p>
+
+  <div class="status-bar">
+    <span id="conn-dot" class="dot"></span>
+    <span id="conn-text">conectando…</span>
+    <span id="last-update"></span>
+  </div>
+
+  <div id="error" class="error" hidden></div>
+  <div id="flights" class="flights"></div>
+  <p id="empty" class="empty" hidden>
+    Sin vuelos todavía. Creá uno con <code>POST /flights</code> desde el daemon o un cliente HTTP.
+  </p>
+</div>
+<script type="module" src="../src/pages/flights-list.js"></script>
+</body>
+</html>

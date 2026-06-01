@@ -22,6 +22,13 @@
 # ─── Fotos rectificadas (extraídas del KMZ, regenerables) ────────
 data/report_*/photos/
 data/report_*/photos_hd/
+# Backups de tiles a otra resolución (p.ej. al swapear 3072 → 1024).
+data/report_*/photos.bak/
+
+# ─── Detecciones: alerts JSON crudos del YOLO + crops (data de prueba
+#     pesada). El frontend consume el detections.geojson chico que vive
+#     en data/report_*/, no estos archivos fuente.
+data/Detecciones/
 
 # El KMZ HD propio del flight (>600 MB).
 # (No suele estar acá pero por si alguien copia uno suelto.)
