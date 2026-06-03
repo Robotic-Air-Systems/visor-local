@@ -1,257 +1,301 @@
-# HANDOFF — visor-local (frontend)
+# HANDOFF — Integración de "Vuelos en vivo" (streaming)
 
-Doc de arranque para el frontend engineer que toma `visor-local`. Te
-pone al día sin tener que leer todo el historial. Para el **porqué**
-de las decisiones de arquitectura, ver
-[`ARCHITECTURE_PROPOSAL.md`](ARCHITECTURE_PROPOSAL.md) (frontend) y
-[`SYSTEM_ARCHITECTURE.md`](SYSTEM_ARCHITECTURE.md) (ecosistema completo).
+Guía para sumar una sección de **cobertura en vivo durante el vuelo** a
+tu visor. Vos ya tenés la UI; esto es el **contrato con el backend** +
+los detalles que cuestan tiempo si los descubrís solo.
 
----
+Qué hace la feature: mientras el dron vuela, sube fotos al server; el
+server las rectifica y te las empuja por WebSocket; vos las pintás como
+overlays georreferenciados sobre un mapa, en tiempo real.
 
-## 1. Qué es esto
-
-Frontend del ecosistema **Aerial Fences / Robotic Air Systems**. Tres
-vistas sobre un mismo backend:
-
-| Vista | Página | Qué hace |
-| --- | --- | --- |
-| Portal (home) | `index.html` | Lobby con 3 cards. Cero lógica. |
-| Vuelos en vivo | `pages/flights-list.html` + `pages/flight-live.html` | Lista de vuelos activos (poll `GET /flights` cada 5s) + vista live de un vuelo (WS, tiles aparecen a medida que el dron sube fotos). |
-| Vuelos archivados | `pages/flight-archive.html` | Vuelo terminado: mapa con infra + detecciones + inspector de fotos (homografía, regla, bbox). Lee data estática de `data/report_*/`. |
-| Drones | `pages/drones.html` | Alta + listado de drones (online/offline, token-shown-once). |
-
-Más `pages/legacy-monolith.html`: el visor viejo de ~2.400 líneas,
-**preservado intacto** como referencia mientras se termina de migrar
-funcionalidad. No es parte del flujo nuevo; no construir encima de él.
-
-**Stack**: vanilla JS + módulos ES6 nativos (`<script type="module">`),
-MapLibre GL para mapas, **sin bundler, sin framework**. El deploy es
-copiar archivos estáticos. No hay build step.
+> El contrato autoritativo es `docs/api.md` en el repo `photos-to-kmz`
+> (branch `main`). Si algo del runtime difiere de este doc, gana
+> `docs/api.md` — avisá al equipo de server.
+>
+> Implementación de referencia (vanilla JS, funcionando) en este repo:
+> `src/live/flight-socket.js`, `src/pages/flight-live.js`,
+> `src/map/photo-overlay.js`, `src/map/get-mapbox-token.js`. Podés
+> portar la lógica a tu stack.
 
 ---
 
-## 2. Contrato con el server (Modo A — same-origin)
+## 1. Modelo de conexión
 
-El visor habla con el backend (`photos-to-kmz`) por paths
-**root-relative**, mismo origin que el documento. **No** hay
-`window.API_BASE` / `window.WS_BASE` seteados en prod.
-
-| Recurso | Path |
-| --- | --- |
-| Lista de vuelos | `GET /flights` |
-| Detalle de vuelo | `GET /flights/{id}` |
-| Config (Mapbox token) | `GET /config` |
-| Healthcheck | `GET /healthz` |
-| Drones | `GET/POST /drones`, `GET /drones/{id}` |
-| Live (WS) | `WS /flights/{id}/live` |
-| Tiles de fotos live | `GET /flights/{id}/tiles/{name}.{ext}` |
-
-Todo pasa por `src/api/client.js` → `apiFetch(path)` / `apiUrl(path)` /
-`wsUrl(path)`. Ese wrapper:
-
-- Antepone `API_PREFIX` (hoy `''`; cuando aparezca un gateway nginx
-  pasa a `'/api'` — **cambio de una constante**).
-- Soporta host override vía `window.API_BASE`/`WS_BASE` (Modo B, para
-  servir el visor desde un origin distinto al backend; requiere CORS
-  server-side). En prod no se usa.
-- Normaliza errores del server (`{error:{code,message,hint}}`) a un
-  `Error` con `.code/.status/.hint`.
-
-El contrato HTTP/WS autoritativo vive en `docs/api.md` del repo
-`photos-to-kmz` (branch `main`). Si ves drift entre eso y el runtime,
-es bug del server — escalá, no parchees el cliente.
-
-### WebSocket events (live)
-
-El server emite: `hello` (snapshot completo al conectar — trae todas
-las fotos previas con su `tile_url`, `quad`, `detections`),
-`photo_processed` (foto nueva), `strategy_updated` (re-posiciona quads
-de fotos previas), `drone_done`, `flight_ended`. Reconnect re-emite
-`hello`, no hay replay → el cliente reconcilia desde el snapshot.
+- **Same-origin, paths root-relative.** El visor se sirve desde la
+  misma raíz que la API (`https://4g.roboticairsystems.com/`). Llamás
+  `fetch('/flights')`, `new WebSocket('wss://' + location.host + '/flights/{id}/live')`.
+  No hardcodees host.
+- **WSS, no WS, en prod.** Derivá el scheme de `location.protocol`
+  (`https:` → `wss:`).
+- **Basic-auth de borde** (Caddy): el browser pide user/pass una vez al
+  entrar y cachea. El WS upgrade lleva esas credenciales solo. No tenés
+  que hacer nada en el código por esto.
+- **Mapbox token**: no lo hardcodees — `GET /config` lo provee (ver §5).
 
 ---
 
-## 3. Mapbox token
+## 2. Endpoints REST
 
-- **Prod**: viene de `GET /config` (el server lo provee desde
-  `P2K_MAPBOX_TOKEN`). No hace falta configurar nada en el cliente.
-- **Dev local**: `src/map/get-mapbox-token.js` intenta `GET /config`
-  primero, y si no hay, cae a `window.MBT` (de `config.local.js`,
-  gitignored). Copiá `config.local.js.example` → `config.local.js` y
-  poné tu token, **o** apuntá el dev contra el server real (que ya
-  expone `/config`).
+### `GET /flights` → lista
 
----
-
-## 4. Deploy productivo
-
-Servido en la **raíz** de `https://4g.roboticairsystems.com/` (NO bajo
-`/web/`):
-
-- **Caddy** termina TLS (cert Let's Encrypt) y hace:
-  - rutas de API (`/flights`, `/drones`, `/config`, `/healthz`, WS) →
-    `reverse_proxy` a uvicorn (`photos-to-kmz`) en `localhost:8000`.
-    `/config` es **exact match** (para no sombrear el estático
-    `/config.local.js.example`).
-  - todo lo demás → file_server estático del checkout de `visor-local`.
-- **Basic-auth de borde** (Caddy): el browser la pide una vez, después
-  navega normal. Las WS pasan con las credenciales cacheadas en el
-  upgrade. El daemon del dron bypassa basic-auth con su Bearer. No hay
-  nada que hacer del lado del visor por esto.
-- El server hace `git pull` del repo a `/opt/visor-local`. **No tocar
-  el server directamente** — lo coordina el master agent.
-
-**Colisión de paths a cuidar**: el estático NO debe tener carpetas
-`flights/`, `drones/`, `config`, `healthz` a nivel raíz (chocarían con
-la API). Hoy no las hay (`drones` vive en `pages/drones.html`).
-
----
-
-## 5. Correr local
-
-```bash
-# 1. (opcional) token Mapbox para dev sin server:
-cp config.local.js.example config.local.js   # editar window.MBT
-
-# 2. servidor estático con cache headers tuneados:
-python3 serve.py          # → http://127.0.0.1:8765/
+```json
+{
+  "flights": [
+    {
+      "flight_id": "f1b3c4d5-…",        // UUID, úsalo para el WS y tiles
+      "cliente": "TGP",
+      "proyecto": "PLNG",
+      "vuelo_id": "vuelo-1",
+      "drone_id": "vtol-01",
+      "fecha": "2026-05-13",
+      "status": "active",                // "active" | "ended"
+      "photo_count": 67,
+      "strategy_version": 3,
+      "strategy_descriptor": ["flat", 1.4],   // o null al inicio
+      "created_at": "2026-05-13T14:23:01Z",
+      "ended_at": null
+    }
+  ]
+}
 ```
 
-`serve.py` sirve desde la raíz, igual que Caddy en prod — los paths
-root-relative funcionan idénticos. Para que las vistas **live/drones**
-tengan datos, necesitás un backend `photos-to-kmz` corriendo:
+Para la lista de vuelos: pollear cada ~5 s. Ordená por `created_at`
+desc. `status` y `photo_count` te dejan distinguir el activo real de
+uno recién creado sin fotos.
 
-- **Opción simple**: apuntá el browser directo al server deployado
-  (`https://4g.roboticairsystems.com/`) — ya tiene todo.
-- **Opción local**: corré `photos-to-kmz` local en `:8000` con
-  `P2K_WEB_DIR=/path/to/visor-local` y entrá por `http://localhost:8000/`
-  (el server se autosirve el visor + la API same-origin). Ver
-  `photos-to-kmz/docs/api.md`.
+### `GET /flights/{id}` → detalle
+Mismo shape que un item de la lista. Útil para refrescar estado puntual.
 
-La vista **archive** funciona sin backend (lee `data/report_*/`
-estático), pero las fotos rectificadas están gitignored (regenerables,
-ver §7) — sin ellas ves el mapa + geometría pero no los tiles de foto.
+### `GET /healthz` → salud del server
+```json
+{ "ok": true, "version": "0.1.0", "uptime_s": 3421.5,
+  "flight_count": 14, "active_flight_count": 2, "drone_count": 3 }
+```
+Barato de pollear. Buen "indicador de servidor caído" — si esto falla,
+todo lo demás falla; mostralo antes que errores sueltos.
+
+### `GET /flights/{id}/tiles/{name}.{ext}` → bytes del tile
+WebP rectificado. `Cache-Control: public, max-age=86400` — inmutable por
+`(flight_id, name)`; solo el **quad** (posición) cambia, nunca los bytes.
+Normalmente no lo pedís a mano: viene `tile_url` en cada foto (§4).
 
 ---
 
-## 6. Mapa de módulos
+## 3. WebSocket — conexión
 
 ```
-index.html                  Portal home (3 cards, sin lógica)
-pages/
-  flights-list.html/.js     lista de vuelos live, poll /flights 5s
-  flight-live.html          vista live (WS) — entry: src/pages/flight-live.js
-  flight-archive.html       vuelo archivado — entry: src/pages/flight-archive.js
-  drones.html               gestión de drones — entry: src/pages/drones.js
-  legacy-monolith.html      visor viejo, referencia, NO tocar
-
-src/
-  api/
-    client.js               apiFetch/apiUrl/wsUrl + error normalization + API_PREFIX
-    flights.js              listFlights, getFlight, getConfig
-    drones.js               listDrones, getDrone, createDrone
-    archive.js              loadManifest/Detections/Infra + buildFootprintsFC + URLs
-  live/
-    flight-socket.js        connectFlightSocket(id, handlers) — WS + reconnect
-  map/
-    basemap.js              MapLibre style, 3 basemaps, preferencia en localStorage
-    get-mapbox-token.js     /config → window.MBT → null
-    photo-overlay.js        ImageSource por foto + quad reorder (live)
-    layers/                 ductos, estaciones, postes, footprints, flight-path,
-                            detections, annotations — cada uno addX(map, geojson)→{setVisible}
-  archive/
-    inspector.js            panel HD: zoom/pan, bbox, regla (homografía), offset.
-                            HD se decodifica con resize (createImageBitmap) para
-                            no reventar RAM (ver §8).
-    homography.js           math pura: computeHomography, applyHomography, haversine
-    photo-cache.js          LRU de tiles raster sobre el mapa + prefetch + evict
-    photo-popup.js          popup al click en footprint/foto
-    annotations.js          store CRUD + persist localStorage + toFeatureCollection
-    annotation-draw.js      dibujar círculo/rect/polígono en el mapa
-    annotation-editor.js    modal create/edit/delete
-    alert-log.js            feedback por detección (localStorage)
-  ui/
-    toast.js                toast(msg, type, ms) — auto-monta DOM+CSS
-    modal.js                createModal({title,width}) genérico
-  session/
-    session.js              getAuthHeader() — no-op hoy (seam para auth futura)
-  i18n/
-    i18n.js, strings.js     t(), setLang(), onLangChange() (es/en)
+WS /flights/{flight_id}/live
 ```
 
-Patrón de las capas del mapa: cada `addXxxLayer(map, geojson, opts)`
-devuelve un handle `{ setVisible(bool), ... }`. Los toggles del sidebar
-del archive llaman esos handles.
+- Conexión long-lived. El server pushea JSON; vos no mandás nada (solo
+  consumís para mantener vivo el socket).
+- **Reconnect**: en cada (re)conexión el server reenvía `hello` con el
+  snapshot completo. **No hay replay de eventos.** → reconciliás desde
+  el snapshot, no acumulás (ver §6).
+- Reconectá con backoff simple en `onclose` (la referencia usa 1.5 s
+  fijo).
 
 ---
 
-## 7. Data de prueba
+## 4. WebSocket — eventos
 
-`data/` tiene lo chico que el frontend consume directo (tracked):
-`manifest.json`, `*.geojson` (ductos/postes/estaciones/detections/
-flight_path), `KMZ_TGP.kmz` (infra de referencia).
+Cada mensaje es `{ "type": "...", ... }`. Cinco tipos:
 
-**Gitignored** (NO en el repo, regenerables): las fotos rectificadas
-`data/report_*/photos/` + `photos_hd/`, backups `photos.bak/`, y los
-alerts crudos del YOLO `data/Detecciones/`. Para regenerar los tiles
-desde un KMZ del engine: ver `README.md` (`tools/build_manifest.py`).
+### `hello` — snapshot inicial (al conectar y al reconectar)
+```json
+{
+  "type": "hello",
+  "flight": { /* mismo shape que GET /flights/{id} */ },
+  "photos": [ /* array de PhotoObjects — todas las fotos hasta ahora */ ]
+}
+```
+
+### `photo_processed` — una foto nueva
+```json
+{ "type": "photo_processed", "photo": { /* PhotoObject */ } }
+```
+
+### `PhotoObject` (el shape que aparece en `hello.photos[*]` y `photo_processed.photo`)
+```json
+{
+  "name": "DJI_0042",
+  "ext": "webp",
+  "quad": [[-12.0461,-77.0249],[-12.0461,-77.0241],
+           [-12.0455,-77.0241],[-12.0455,-77.0249]],
+  "agl_m": 87.3,
+  "rel_alt_m": 90.1,
+  "tile_url": "/flights/{id}/tiles/DJI_0042.webp",
+  "strategy_version": 3,
+  "metadata": { "lat": …, "lon": …, "abs_alt_m": …, … },
+  "detections": [ /* ver §8 — puede ser [] */ ]
+}
+```
+⚠️ **`quad` viene en orden `[LL, LR, UR, UL]`, cada punto `[lat, lon]`.**
+Mapbox/MapLibre `ImageSource` espera otro orden y `[lng, lat]` — ver §7.
+
+### `strategy_updated` — se recalcularon posiciones de fotos previas
+```json
+{
+  "type": "strategy_updated",
+  "strategy_version": 4,
+  "descriptor": ["anchored", 152.3],
+  "affected_photos": [
+    { "name": "DJI_0001", "quad": [...], "agl_m": 87.1 },
+    { "name": "DJI_0002", "quad": [...], "agl_m": 86.8 }
+  ]
+}
+```
+El server ajusta la estrategia AGL a mitad de vuelo y **re-georreferencia
+fotos ya pintadas**. Tenés que **mover** esos overlays (no re-crearlos:
+los bytes del tile no cambiaron, solo el quad). Ver §7.
+
+### `drone_done` — el dron terminó de subir (NO cierra el vuelo)
+```json
+{ "type": "drone_done", "drone_done_at": "2026-05-13T18:45:00Z" }
+```
+Señal informativa: "no vienen más fotos". El vuelo sigue `active` hasta
+que el operador lo cierra. Usalo para sugerir "cerrar vuelo" en la UI.
+
+### `flight_ended` — vuelo cerrado
+```json
+{
+  "type": "flight_ended",
+  "summary": {
+    "photo_count": 142, "duration_s": 1834,
+    "strategy_descriptor": ["flat", 1.4],
+    "kmz_preview_url": null,           // reservado, hoy siempre null → no muestres botón
+    "end_reason": "operator"           // "operator" | "drone_done" | "inactivity"
+  }
+}
+```
+Se dispara por `POST /flights/{id}/end` (operador) o por el safety-net de
+inactividad del server (60 min sin foto → auto-end). Chequeá
+`end_reason` para distinguir.
 
 ---
 
-## 8. Notas de RAM (ya optimizado, no romper)
+## 5. Mapbox token
 
-WebP comprime en disco/transferencia, pero el browser decodifica a
-píxeles crudos (4 bytes/px) — **el formato no ayuda en RAM una vez
-decodificado**. Dos optimizaciones ya aplicadas:
-
-- **Tiles del mapa**: el dataset se sirve a 1024px (no 3072). Cache LRU
-  con cap bajo (`photo-cache.js`: maxCache 12, softMax 30) + evict al
-  `document.hidden`. Pico ~33 MB vs ~300 MB.
-- **Inspector HD**: `inspector.js` hace `createImageBitmap(blob,
-  {resizeWidth: 3000})` → textura GPU ~25 MB en vez de ~240 MB nativos.
-  Las bboxes se escalan dinámicamente con `tile_dims`. `revokeObjectURL`
-  al cerrar/cambiar foto para no leakear.
-
-Si tocás el pipeline de imágenes, tené presente estas dos.
+```js
+// Pedí el token al server; fallback a window.MBT (config.local.js) en dev.
+const cfg = await fetch('/config').then(r => r.json());
+const token = cfg.mapbox_token || window.MBT || null;
+```
+`GET /config` → `{ "mapbox_token": "pk.eyJ…" }`. En prod el server lo
+provee; no necesitás `config.local.js`. La referencia (`get-mapbox-token.js`)
+le mete un timeout de 3 s al `/config` y cae al fallback.
 
 ---
 
-## 9. Decisión abierta — control de streaming (PARQUEADO)
+## 6. Estructura mínima del cliente
 
-Los botones de **iniciar / terminar vuelo desde el visor** están
-parqueados: el lado dron cambió de dueño y el command-channel (el
-trigger que arranca una misión) quedó en pausa esperando que el nuevo
-dueño lo defina. **No hay UI a medio construir** — simplemente no
-existe todavía.
+```
+1. GET /config           → token Mapbox, iniciar mapa
+2. abrir WS /flights/{id}/live
+3. on 'hello'            → reconciliar: reconstruir el set de overlays
+                           desde flight + photos[] (NO append — reset)
+4. on 'photo_processed'  → agregar/actualizar UN overlay
+5. on 'strategy_updated' → mover los overlays de affected_photos
+6. on 'flight_ended'     → marcar terminado en la UI
+7. on close              → reconnect con backoff; el próximo 'hello'
+                           reconcilia el estado completo
+```
 
-Independiente de eso: un botón **"Cerrar vuelo"** (`POST /flights/{id}/end`,
-operator-only, ya existe en el server e idempotente) no depende del
-trigger del dron y se puede sumar cuando se quiera. Hoy el flight se
-cierra por el operador vía curl, por `drone_done` + decisión manual, o
-por el safety-net de inactividad del server (60 min sin foto).
-
-Contexto adicional del lado dron (FYI, no es del visor): la Jetson crea
-una carpeta `vueloX` nueva por cada power-on del VTOL, lo que puede
-generar flights vacíos (`0 fotos, active`) si se prende sin volar. El
-servicio de inferencia `geo_inference` (repo aparte, en la Jetson)
-tiene el flight-detector/watcher. Si querés, la lista de vuelos podría
-filtrar/atenuar los vacíos — está sin decidir.
+Clave del reconnect: mantené los overlays en un `Map<name, …>`. En
+`hello`, recorré `photos[]` y hacé add-or-update por `name` (idempotente).
+Así una reconexión a mitad de vuelo no duplica ni pierde nada.
 
 ---
 
-## 10. Estado y próximos pasos sugeridos
+## 7. El gotcha que más cuesta: quad → coords del mapa
 
-Hecho (Fase A del refactor): arquitectura multi-page, live view, drones
-page, archive view con inspector + annotations, optimización de RAM.
+El server emite `quad = [LL, LR, UR, UL]`, cada punto `[lat, lon]`.
+Mapbox/MapLibre `ImageSource.coordinates` espera **`[TL, TR, BR, BL]`,
+cada punto `[lng, lat]`**. El mapeo:
 
-Pendientes razonables (ninguno bloqueante):
-- Integrar i18n en las páginas nuevas (hoy `src/i18n/` existe pero las
-  páginas nuevas están en español hardcodeado).
-- Stats view + alert list del legacy, si se quieren en el archive nuevo.
-- Render de detecciones en el live view (el server ya las manda en
-  `photo_processed`/`hello`; ver nota forward-compat en `flight-live.js`
-  sobre el futuro evento `detections_updated` async).
-- Filtro de flights vacíos en la lista (ver §9).
-- Cuando el sistema crezca: auth de operador (Fase C en
-  `SYSTEM_ARCHITECTURE.md`), archive servido por API en vez de
-  filesystem (Fase D).
+```js
+// TL = UL = quad[3], TR = UR = quad[2], BR = LR = quad[1], BL = LL = quad[0]
+// y además swap [lat,lon] -> [lng,lat]
+function quadToMapCoords(quad) {
+  return [3, 2, 1, 0].map(i => [quad[i][1], quad[i][0]]);
+}
+```
+
+Agregar un overlay nuevo (MapLibre/Mapbox GL):
+```js
+map.addSource(srcId, { type: 'image', url: photo.tile_url,
+                       coordinates: quadToMapCoords(photo.quad) });
+map.addLayer({ id: lyrId, type: 'raster', source: srcId });
+```
+
+Mover un overlay existente en `strategy_updated` (NO re-crear):
+```js
+map.getSource(srcId).setCoordinates(quadToMapCoords(updatedQuad));
+```
+
+`tile_url` ya viene absoluto-relativo (`/flights/{id}/tiles/…`); en
+same-origin lo usás tal cual. Fallback si faltara:
+`/flights/${flightId}/tiles/${name}.${ext}`.
+
+Sanity check de orientación: un círculo en el pixel `(0,0)` del tile
+debe caer sobre la esquina **UL** (top-left) del footprint en el mapa.
+
+Detalle de UX: throttleá el fit-to-bounds (la referencia: 1 fit / 1.5 s)
+y después del primer fit no hagas zoom-out más allá del zoom actual —
+algunos drones derivan en un bbox ancho y el mapa "salta" feo si re-fiteás
+agresivo en cada foto.
+
+---
+
+## 8. Detecciones (opcional, disponible)
+
+Cada `PhotoObject` trae `detections` (puede ser `[]`, nunca falta):
+```json
+{
+  "id": "20260425_DJI_0042_vehicle_1",
+  "class": "vehicle",
+  "confidence": 0.83,
+  "bbox_px": [x, y, w, h],          // tile-pixel space del tile rectificado
+  "bbox_px_original": [x0,y0,x1,y1],// debug
+  "tile_dims": [w, h]               // dims del tile al que refiere bbox_px
+}
+```
+Si dibujás bboxes sobre el tile, escalá `bbox_px` por
+`(displayW/tile_dims[0], displayH/tile_dims[1])` por si mostrás el tile
+a otra resolución. `geometry` a nivel detección puede ser `null` (alert
+sin GPS) — manejalo defensivo.
+
+**Heads-up forward-compat**: hoy las detecciones llegan dentro del
+`PhotoObject` (junto con la foto). El roadmap del server las va a mover a
+un evento separado **`detections_updated`** (async, segundos después de
+la foto, porque la inferencia YOLO tarda). **No asumas que las bboxes
+llegan siempre junto con la foto** — dejá el path listo para agregarlas a
+una foto ya pintada. Reconnect siempre las trae en `hello`.
+
+---
+
+## 9. Cerrar un vuelo desde la UI (independiente)
+
+```
+POST /flights/{id}/end      (operador)
+```
+Idempotente: llamarlo 2 veces devuelve el mismo summary, status 200.
+Dispara `flight_ended` por el WS. Es independiente de cualquier trigger
+del dron — podés tener un botón "Terminar vuelo" sin coordinar con el
+lado dron. (El control de **iniciar** vuelo desde la UI está parqueado
+del lado dron; no lo implementes todavía.)
+
+---
+
+## 10. Checklist de integración
+
+- [ ] Lista de vuelos: `GET /flights` cada 5 s, ordenada, distingue
+      active/ended y photo_count.
+- [ ] Mapa con token de `GET /config`.
+- [ ] WS `/flights/{id}/live` con reconnect + reconciliación en `hello`.
+- [ ] `quadToMapCoords` aplicado en add y en `setCoordinates`.
+- [ ] `strategy_updated` mueve overlays existentes (no recrea).
+- [ ] `flight_ended` refleja estado terminado + `end_reason`.
+- [ ] `wss://` en prod; nada hardcodeado de host.
+- [ ] (opcional) bboxes de `detections`, con el path listo para
+      `detections_updated` futuro.
